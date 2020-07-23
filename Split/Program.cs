@@ -1,5 +1,6 @@
 ﻿using Split.Business;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Split
@@ -18,15 +19,14 @@ namespace Split
 
             try
             {
+                List<Trip> trips = new List<Trip>();
                 StreamReader sr = new StreamReader(inputFile);
                 // Get the first line as the number of members
                 int memberCount = GetIntegerLine(sr);
-                // Initilize TripGroup class        
-                TripGroup tripGroup = new TripGroup();
                 do
                 {
                     Trip trip = new Trip();
-                    tripGroup.AddTrip(trip);
+                    trips.Add(trip);
                     // Loop to add members
                     for (int index = 0; index < memberCount; index++)
                     {
@@ -50,9 +50,13 @@ namespace Split
                 // Start to output billing data
                 StreamWriter streamWriter = new StreamWriter(outputFile);
                 // Triger calculation
-                tripGroup.Calculate();
-                // Call Output method to output data
-                tripGroup.Output(streamWriter);
+                foreach (Trip trip in trips)
+                {
+                    trip.CaculateAmountDue();
+                    // output data
+                    trip.Output(streamWriter);
+                    streamWriter.WriteLine();
+                }
                 streamWriter.Close();
             }
             catch (Exception e)
